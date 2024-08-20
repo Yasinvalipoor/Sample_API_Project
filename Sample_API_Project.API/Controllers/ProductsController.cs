@@ -59,5 +59,45 @@ namespace Sample_API_Project.API.Controllers
         {
             return Ok(await _context.Products.Where(c => c.IsAvailable).ToArrayAsync());
         }
+
+
+        //Adding An Item
+        [HttpPost]
+        public async Task<ActionResult> PostProduct(Product product)
+        {
+            //Model Validation (Product & Category)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            //Handling Errors
+            if (product is null)
+            {
+                return NoContent();
+            }
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            //CreatedAtAction Is Helper Method
+            //Status Code HTTP 201 (Created) Response / (With Option Things Like Id)
+            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+        }
+
+
+        //Updating An Item
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutProduct(int id, Product product)
+        {
+            if (id != product.Id) return BadRequest();
+            _context.Entry(product).State = EntityState.Modified;
+
+            try { await _context.SaveChangesAsync(); }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Products.Any(p => p.Id == id)) return NotFound();
+                else throw;
+            }
+            return NoContent();
+        }
     }
 }
