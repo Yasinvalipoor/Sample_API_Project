@@ -53,5 +53,11 @@ namespace Sample_API_Project.API.Controllers
             }
             return Ok(product);
         }
+
+        [HttpGet("IsAvailable")]
+        public async Task<ActionResult> GetAvailableProducts()
+        {
+            return Ok(await _context.Products.Where(c => c.IsAvailable).ToArrayAsync());
+        }
     }
 }
