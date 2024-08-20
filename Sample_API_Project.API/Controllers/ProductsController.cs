@@ -99,5 +99,19 @@ namespace Sample_API_Project.API.Controllers
             }
             return NoContent();
         }
+
+
+        //Delete An Item
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product is null) return NotFound();
+
+            _context.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return Ok(product);
+        }
     }
 }
