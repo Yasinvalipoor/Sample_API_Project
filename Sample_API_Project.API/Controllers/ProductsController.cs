@@ -108,10 +108,28 @@ namespace Sample_API_Project.API.Controllers
             var product = await _context.Products.FindAsync(id);
             if (product is null) return NotFound();
 
-            _context.Remove(product);
+            _context.Products.Remove(product);
             await _context.SaveChangesAsync();
 
             return Ok(product);
+        }
+
+        //Delete An Item
+        [HttpDelete("delete")]
+        public async Task<ActionResult> MultipleDeleteProduct(int[] ids)
+        {
+            var products = new List<Product>();
+            foreach (int id in ids)
+            {
+                var product = await _context.Products.FindAsync(id);
+                if (product is null) return NotFound();
+                products.Add(product);
+            }
+
+            _context.Products.RemoveRange(products);
+            await _context.SaveChangesAsync();
+            return Ok(products);
+
         }
     }
 }

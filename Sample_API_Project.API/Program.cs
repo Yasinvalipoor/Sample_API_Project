@@ -7,10 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 //When We Need ModelState Invalid Filter
-    //.ConfigureApiBehaviorOptions(option=>
-    //{
-    //    option.SuppressModelStateInvalidFilter = true;
-    //});
+//.ConfigureApiBehaviorOptions(option=>
+//{
+//    option.SuppressModelStateInvalidFilter = true;
+//});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -49,15 +49,21 @@ app.MapGet("/Product", async (ShopContext _context) =>
 app.MapGet("/Product/{id}", async (int id, ShopContext _context) =>
 {
     var product = _context.Products.Find(id);
-    if (product is null)
-    {
-        return Results.NotFound();
-    }
+    if (product is null) return Results.NotFound();
     return Results.Ok(product);
 });
 app.MapGet("/Product/IsAvailable", async (ShopContext _context) =>
 {
     return _context.Products.Where(c => c.IsAvailable).ToArrayAsync();
+});
+
+app.MapDelete("/Product/{id}", async (int id, ShopContext _context) =>
+{
+    var product = await _context.Products.FindAsync(id);
+    if (product is null) return Results.NotFound();
+    _context.Products.Remove(product);
+    await _context.SaveChangesAsync();
+    return Results.Ok(product);
 });
 
 app.Run();
