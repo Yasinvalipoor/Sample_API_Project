@@ -70,15 +70,5 @@ public class ProductController : ControllerBase
             }
         }
         return Ok(await products.ToArrayAsync());
-
-        //if (!string.IsNullOrEmpty(queryParameters.SortBy))
-        //{
-        //    if (typeof(Product).GetProperty(queryParameters.SortBy) != null)
-        //    {
-        //        products = products.OrderByCustom(
-        //            queryParameters.SortBy,
-        //            queryParameters.SortOrder);
-        //    }
-        //}
     }
 }
