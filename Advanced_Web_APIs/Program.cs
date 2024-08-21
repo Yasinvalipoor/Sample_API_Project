@@ -1,11 +1,23 @@
 using Advanced_Web_APIs.Models.DbConfig;
 using Advanced_Web_APIs.Models.entities;
 using Advanced_Web_APIs.Models.Query;
+using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+})
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -42,7 +54,7 @@ app.MapGet("/Product/Filtering", async (ShopContext _context, [AsParameters] Pri
     IQueryable<Product> products = _context.Products;
     if (priceQuery.MaxPrice is not null && priceQuery.MinPrice is not null)
     {
-        products = products.Where(p => p.Price >= priceQuery.MinPrice && p.Price <= priceQuery.MaxPrice);
+        products = products.Where(p => p.Price >= priceQuery.MinPrice.Value && p.Price <= priceQuery.MaxPrice.Value);
     }
     return Results.Ok(await products.ToArrayAsync());
 });

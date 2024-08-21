@@ -1,18 +1,20 @@
 ﻿using Advanced_Web_APIs.Models.DbConfig;
 using Advanced_Web_APIs.Models.entities;
 using Advanced_Web_APIs.Models.Query;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Advanced_Web_APIs.Controllers;
 
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/Product")]
 [ApiController]
-public class ProductController : ControllerBase
+public class ProductV1Controller : ControllerBase
 {
     private readonly ShopContext _context;
 
-    public ProductController(ShopContext context)
+    public ProductV1Controller(ShopContext context)
     {
         _context = context;
         _context.Database.EnsureCreated();
@@ -58,6 +60,19 @@ public class ProductController : ControllerBase
         return Ok(await products.ToArrayAsync());
     }
 
+    //[HttpGet("AdvanceSearching")]
+    //public async Task<ActionResult> GetAllProductsByAdvanceSearching([FromQuery] SearchingQueryParameters searchingQuery)
+    //{
+    //    IQueryable<Product> products = _context.Products;
+    //    if (!string.IsNullOrEmpty(searchingQuery.SearchTerm))
+    //    {
+    //        products = products.Where(
+    //            p => p.Sku.ToLower().Contains(searchingQuery.SearchTerm.ToLower()) ||
+    //                p.Name.ToLower().Contains(searchingQuery.SearchTerm.ToLower()));
+    //    }
+    //    return Ok(await products.ToArrayAsync());
+    //}
+
     [HttpGet("Sorting")]
     public async Task<IActionResult> GetAllProductsBySorting([FromQuery] SortingQueryParameters sortingQuery)
     {
@@ -68,6 +83,33 @@ public class ProductController : ControllerBase
             {
                 products = products.OrderByCustom(sortingQuery.SortBy, sortingQuery.SortOrder);
             }
+        }
+        return Ok(await products.ToArrayAsync());
+    }
+}
+
+[ApiVersion("2.0")]
+[Route("api/v{version:apiVersion}/Product")]
+[ApiController]
+public class ProductV2Controller : ControllerBase
+{
+    private readonly ShopContext _context;
+
+    public ProductV2Controller(ShopContext context)
+    {
+        _context = context;
+        _context.Database.EnsureCreated();
+    }
+
+    [HttpGet("AdvanceSearching")]
+    public async Task<ActionResult> GetAllProductsByAdvanceSearching([FromQuery] SearchingQueryParameters searchingQuery)
+    {
+        IQueryable<Product> products = _context.Products;
+        if (!string.IsNullOrEmpty(searchingQuery.SearchTerm))
+        {
+            products = products.Where(
+                p => p.Sku.ToLower().Contains(searchingQuery.SearchTerm.ToLower()) ||
+                    p.Name.ToLower().Contains(searchingQuery.SearchTerm.ToLower()));
         }
         return Ok(await products.ToArrayAsync());
     }
