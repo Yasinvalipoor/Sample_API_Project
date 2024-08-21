@@ -12,6 +12,10 @@ builder.Services.AddApiVersioning(options =>
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new QueryStringApiVersionReader("v"),//QueryString = Searching?sku=AWMPS&v=1.0
+        new HeaderApiVersionReader("X-API-Version"),//Http Header For Accept */*
+        new MediaTypeApiVersionReader("ver"));//Http Header For Accept application/json;ver=2.0
 })
     .AddApiExplorer(options =>
     {
